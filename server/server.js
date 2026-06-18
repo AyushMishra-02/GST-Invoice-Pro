@@ -1,12 +1,20 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { dbQuery, dbRun } from './db.js'
 import { calculateGST } from './utils/gstCalculator.js'
 import { generateInvoicePDF } from './utils/pdfGenerator.js'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, '../client/dist')))
 
 // ─── API ROUTES ────────────────────────────────────────────────────────────
 
@@ -97,7 +105,12 @@ app.get('/api/invoices/:id/pdf', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
-const PORT = 5001
+// AFTER defining your API routes, catch all other requests and return the React index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+})
+
+const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
   console.log(`🚀 GST Backend running on http://localhost:${PORT}`)
 })

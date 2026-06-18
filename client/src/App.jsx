@@ -23,8 +23,8 @@ function App() {
     const fetchData = async () => {
       try {
         const [compRes, cliRes] = await Promise.all([
-          axios.get('http://localhost:5001/api/companies'),
-          axios.get('http://localhost:5001/api/clients')
+          axios.get('/api/companies'),
+          axios.get('/api/clients')
         ])
         setCompanies(compRes.data)
         setClients(cliRes.data)
@@ -39,7 +39,7 @@ function App() {
   // Auto-validate/preview when form changes (if valid)
   useEffect(() => {
     if (formData.seller_id && formData.client_id && formData.items.length > 0 && formData.items[0].description) {
-      axios.post('http://localhost:5001/api/invoices/validate', formData)
+      axios.post('/api/invoices/validate', formData)
         .then(res => setPreview(res.data))
         .catch(err => console.error("Validation error", err))
     } else {
@@ -52,11 +52,11 @@ function App() {
     
     setLoading(true)
     try {
-      const res = await axios.post('http://localhost:5001/api/invoices', formData)
+      const res = await axios.post('/api/invoices', formData)
       const invoiceId = res.data.id
       
       // Download PDF
-      window.open(`http://localhost:5001/api/invoices/${invoiceId}/pdf`, '_blank')
+      window.open(`/api/invoices/${invoiceId}/pdf`, '_blank')
       
       // Reset form
       setFormData(prev => ({
